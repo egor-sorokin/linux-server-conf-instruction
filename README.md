@@ -138,21 +138,22 @@
     chmod 700 .ssh
     chmod 644 .ssh/authorized_keys
     ```
- 7) You should be able to log in as grader via:
-    ```
-    ssh -i ~/.ssh/grader-access_key -p 2200 grader@my_public_ip
-    ```
- 8) To enforce key based authentication: 
-     1) Open sshd_config file:
+ 7) To enforce key based authentication:
+     1) Log in as grader
+     2) Open sshd_config file:
         ```
         $ sudo nano /etc/ssh/sshd_config
         ```
-     2) Find line "# Change to no to disable tunnelled clear text passwords", if on the next line
+     3) Find line "# Change to no to disable tunnelled clear text passwords", if on the next line
         you see "PasswordAuthentication yes" change "yes" to "no"
-     3) Restart ssh service: 
+     4) Restart ssh service: 
         ```
         $ sudo service ssh restart
         ```
+ 8) You should be able to log in now as grader via:
+     ```
+     ssh -i ~/.ssh/grader-access_key -p 2200 grader@my_public_ip
+     ```
  
  
  
