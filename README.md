@@ -49,7 +49,6 @@
         8) Now you are ready to log in, type next lines:
            ```
            $ ssh -i ~/.ssh/my_awesome_key.rsa ubuntu@my_public_ip
-    
            ```
            see the section "General" to check how my_public_ip should look, in my case it is *35.154.151.158*. 
            This key you can find on Amazon Lightsail homepage under tab "Resources" near the name of your instance.
