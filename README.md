@@ -105,13 +105,13 @@
  Username will be **grader**, and password can be any:
  
   1) Create user:
-      ```
-      $ sudo adduser grader
-      ```
+     ```
+     $ sudo adduser grader
+     ```
   2) Create a new file in the */etc/sudoers.d* directory: 
-      ```
-      $ sudo nano /etc/sudoers.d/grader
-      ```
+     ```
+     $ sudo nano /etc/sudoers.d/grader
+     ```
   3) Add this line to the file to give **grader** sudo permissions:
    
      **"grader ALL=(ALL:ALL) ALL"**
@@ -150,9 +150,43 @@
         $ sudo service ssh restart
         ```
  8) You should be able to log in now as grader via:
-     ```
-     ssh -i ~/.ssh/grader-access_key -p 2200 grader@my_public_ip
-     ```
+    ```
+    ssh -i ~/.ssh/grader-access_key -p 2200 grader@my_public_ip
+    ```
+     
+ ### Install and configure tools
+ #### Git
+ Type in your terminal next command:
+ ```
+ $ sudo apt-get install git
+ ```
+ 
+ #### Apache
+ Type in your terminal next command:
+ ```
+ $ sudo apt-get install apache2
+ ```
+ 
+ Visit your public IP in your favourite browser, you should see there "Ubuntu default page"
+ 
+ #### mod_wsgi
+ Type in your terminal next command:
+ ```
+ $ sudo apt-get install libapache2-mod-wsgi python-dev
+ ```
+ 
+ With this package your Apache will be able to serve Flask application.
+ 
+ To enable wsgi run next command:
+ ```
+ $ sudo a2enmod wsgi
+ ```
+ 
+ #### PostgreSQL
+ Type in your terminal next command:
+ ```
+ $ sudo apt-get install postgresql
+ ``` 
  
  
  
