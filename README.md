@@ -38,9 +38,9 @@
         There is an issue with some macOS, default key for ssh doesn't work correctly, so follow next steps to avoid that:  
         1) Open Amazon Lightsail "Account page"
         2) Click on "Download default key"
-        3) Open downloaded file by any **text editor** 
+        3) Open downloaded the file by any text editor 
         4) Copy text from there
-        5) Create a file with format *.rsa* in directory *~/.ssh/*, for example *~/.ssh/my_awesome_key.rsa* 
+        5) Create a file with format *.rsa* in directory *~/.ssh/*, for example *~/.ssh/my\_awesome\_key.rsa* 
         6) Paste copied text
         7) Now you need to change permission for this file, type in your terminal:
             ``` 
@@ -55,7 +55,7 @@
             
 
  #### Update all currently installed packages.
- Before start your work you need to **update all packages to prevent any errors in the future**.
+ Before start your work you need to update all packages to prevent any errors in the future.
 
  Type in your terminal next commands:
   ```
@@ -72,7 +72,7 @@
  
  
  #### Configure the firewall:
- 1) Open */etc/ssh/sshd_config* find line 5 and change there 22 to 2200, then type:
+ 1) Open */etc/ssh/sshd\_config* find the line 5 and change there 22 to 2200, then type:
       ```
       $ sudo service ssh restart
       ```
@@ -167,7 +167,7 @@
  $ sudo apt-get install apache2
  ```
  
- Visit your public IP in your favourite browser, you should see there "Ubuntu default page"
+ Visit your public IP in your favourite browser, you should see there "Ubuntu page"
  
  #### mod_wsgi
  Type in your terminal next command:
@@ -188,8 +188,112 @@
  $ sudo apt-get install postgresql
  ``` 
  
+ ## Project preparation
+ All next info related to my own project [flask-item-catalog], 
+ so there is no need to use the same names of directories and files. Let's get started.
+  
+ #### Clone project
+ 1) From the root navigate to the directory /var/www:
+ ```
+ $ cd /var/www/
+ ```
+ 2) Create a folder called  *flaskItemsCatalog* and go inside:
+ ```
+ $ mkdir flaskItemsCatalog
+ $ cd flaskItemsCatalog
+ ```
+ 3) Clone the project and create a name for the project dir:
+ ```
+ $ sudo git clone https://github.com/egor-sorokin/flask-items-catalog flaskItemsCatalog
+ ```
+ 
+ #### Update Google OAuth2
+ Currently in the project Google OAuth2 was configured for **localhost:5000** and 
+ it's OK for a local environment but now we have a real IP.
+ 1) Let's create a new project in the [Google developer console]: 
+    To create new client ID use the instruction in this course [Udacity OAuth2] or these steps: but instead of **localhost:5000**
+    1) Log in to [Google developer console]
+    2) Open up credentials tab
+    3) Select "Create Credentials"
+    4) Choose "OAuth Client ID"
+    5) Select "Web Application"
+    6) Enter name of your project
+    7) Add to authorized JavaScript origins:
+        1) http://my_public_ip
+        2) http://ec2-my_public_ip.ap-south-1.compute.amazonaws.com 
+    8) Add as authorized redirect URIs:
+        1) http://ec2-my_public_ip.ap-south-1.compute.amazonaws.com/login
+        2) http://ec2-my_public_ip.ap-south-1.compute.amazonaws.com/oauth2callback
+        3) http://ec2-my_public_ip.ap-south-1.compute.amazonaws.com/gconnect 
+ 
+ 2) Save these credentials on your local machine 
+ 3) Open and copy in a buffer all data there
+ 4) In the terminal (you should be inside of the instance) navigate to the project dir:
+ ```
+ $ cd /var/www/flaskItemsCatalog/flaskItemsCatalog
+ ```
+ 5) Find **client\_secrets.json** file, open it and replace all data there by new credentials from buffer
+ 6) Find and open the file **views.py** and replace on lines 27 and 65 *client\_secrets.json* by 
+ */var/www/flaskItemsCatalog/flaskItemsCatalog/client\_secrets.json*
+   
+ #### Update database name
+ As now we use PostgreSQL instead of SQLite we need to change some lines in several files
+ 1) Navigate to *flaskItemsCatalog* dir and open **views.py** again
+ 2) Find line with **engine = create\_engine('sqlite:///catalog.db')** and replace it by 
+    **engine = create\_engine('postgresql://catalogitems:passwowrd\_of\_your\_database@localhost/catalogitems')**
+ 3) Do the same for files **models.py** and **fake\_data.py**
+ 
+ #### Other updates in the project's files
+ 1) Let's make the owner of the full project **ubuntu** user, we should do that [recursively] so type next command:
+  ```
+  $ cd /var/www/
+  $ sudo chown -R ubuntu:ubuntu flaskItemsCatalog/
+  ```
+ 2) Now change the name of **views.py** file to **\_\_init\_\_.py**
+ ```
+ $ cd /var/www/flaskItemsCatalog/flaskItemsCatalog
+ $ mv view.py __init__.py
+ ```
+ 3) Open this file and scroll to the end of it
+ 4) Find the line with **app.run(host='0.0.0.0', port=5000)** and remove **host='0.0.0.0', port=5000** there
+ 
+ You are almost done!
+ 
+ #### Install virtual env and project dependencies
+ The last item in the whole section is a virtual environment and dependencies.
+ 1) Install pip and virtual env globally:
+ ```
+ $ sudo apt-get install python-pip
+ $ sudo apt-get install python-virtualenv
+ ```
+ 2) Create virtual environment in the directory */var/www/flaskItemsCatalog/flaskItemsCatalog*:
+ ```
+ $ virtualenv my_awesome_env_name
+ ```
+ 3) Activate it:
+ ```
+ $ . my_awesome_env_name/bin/activate
+ ```
+ 4) Now you are ready to install all dependencies:
+ ```
+ $ pip install sqlalchemy
+ $ pip install flask
+ $ pip install httplib2
+ $ pip install requests
+ $ pip install --upgrade oauth2client
+ $ sudo apt-get install libpq-dev
+ $ pip install psycopg2
+ ```
+ 5) To deactivate the virtual environment type:
+ ```
+ $ deactivate
+ ``` 
  
  
+ [recursively]: <http://nersp.nerdc.ufl.edu/~dicke3/nerspcs/chown.html>
+ [Udacity OAuth2]: <https://www.udacity.com/course/authentication-authorization-oauth--ud330>
+ [Google developer console]: <https://console.developers.google.com/projectselector/apis/credentials>
+ [flask-item-catalog ]: <https://github.com/egor-sorokin/flask-items-catalog>
  [Amazon Lightsail]: <https://amazonlightsail.com/
  [Configuring Linux Web Servers | Udacity]: <https://www.youtube.com/watch?v=axn-ni_NFoo&list=PLAwxTw4SYaPmH5HlJY4ABvoJ4jyGztDD7>
  
