@@ -5,7 +5,7 @@
  in Udacity Full Stack Nanodegree program. 
 
 
- ### General
+ ## General
  URLs:
    1. http://ec2-35-154-151-158.ap-south-1.compute.amazonaws.com/
    2. http://35.154.151.158/
@@ -14,10 +14,10 @@
 
  SSH Port: 2200
   
- All steps below and oriented for macOS users, but I believe they are should be the same for
+ All steps below are oriented for macOS users, but I believe they are should be the same for
  Windows and especially Linux users.
 
- ### Initialisation
+ ## Initialisation
  Go to [Amazon Lightsail], then
    1. Create new account or sign in.
    2. Start a new Ubuntu Linux server instance and follow the steps during creating of the instance:
@@ -100,7 +100,7 @@
 
  **Important:** For all next steps you have to be connected to your instance.  
 
- ### Create user
+ ## Create user
  #### Create user and give him "sudo" permissions
  Username will be **grader**, and password can be any:
  
@@ -134,8 +134,8 @@
  5) Open this file and paste the content from step 2 there
  6) Change permission:
     ```
-    chmod 700 .ssh
-    chmod 644 .ssh/authorized_keys
+    $ chmod 700 .ssh
+    $ chmod 644 .ssh/authorized_keys
     ```
  7) To enforce key based authentication:
      1) Log in as grader
@@ -151,10 +151,10 @@
         ```
  8) You should be able to log in now as grader via:
     ```
-    ssh -i ~/.ssh/grader-access_key -p 2200 grader@my_public_ip
+    $ ssh -i ~/.ssh/grader-access_key -p 2200 grader@my_public_ip
     ```
      
- ### Install and configure tools
+ ## Install and configure tools
  #### Git
  Type in your terminal next command:
  ```
