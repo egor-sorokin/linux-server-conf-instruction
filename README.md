@@ -187,6 +187,36 @@
  ```
  $ sudo apt-get install postgresql
  ``` 
+ Now you need to create a new PostgreSQL user, you can name it whatever you want, 
+ in my case I named it *catalogitems* as a name of my project for simplicity. So let's
+ get started.
+  
+ 1) First of all you need to change your current user to postgres one, for that use:
+  ```
+    $ sudo su - postgres
+  ```
+ 2) Type next command to connect to psql
+  ```
+    $ psql
+  ```
+ 3) You are inside now and here you should use SQL language, to create user *catalogitems* type:
+  ```
+    CREATE ROLE catalogitems WITH LOGIN;
+  ```
+ 4) To set the password for this user, type:
+  ```
+    \password catalog
+  ```
+ 5) To give this user the ability to create databases, type:
+  ```
+    ALTER ROLE catalog CREATEDB;
+  ```
+ 6) To return to the ubuntu user, type:
+  ```
+    \q
+    exit
+  ```
+
  
  ## Project preparation
  All next info related to my own project [flask-item-catalog], 
