@@ -224,18 +224,18 @@
   
  #### Clone project
  1) From the root navigate to the directory /var/www:
- ```
- $ cd /var/www/
- ```
+   ```
+     $ cd /var/www/
+   ```
  2) Create a folder called  *flaskItemsCatalog* and go inside:
- ```
- $ mkdir flaskItemsCatalog
- $ cd flaskItemsCatalog
- ```
+   ```
+     $ mkdir flaskItemsCatalog
+     $ cd flaskItemsCatalog
+   ```
  3) Clone the project and create a name for the project dir:
- ```
- $ sudo git clone https://github.com/egor-sorokin/flask-items-catalog flaskItemsCatalog
- ```
+   ```
+     $ sudo git clone https://github.com/egor-sorokin/flask-items-catalog flaskItemsCatalog
+   ```
  
  #### Update Google OAuth2
  Currently in the project Google OAuth2 was configured for **localhost:5000** and 
@@ -259,9 +259,9 @@
  2) Save these credentials on your local machine 
  3) Open and copy in a buffer all data there
  4) In the terminal (you should be inside of the instance) navigate to the project dir:
- ```
- $ cd /var/www/flaskItemsCatalog/flaskItemsCatalog
- ```
+   ```
+     $ cd /var/www/flaskItemsCatalog/flaskItemsCatalog
+   ```
  5) Find **client\_secrets.json** file, open it and replace all data there by new credentials from buffer
  6) Find and open the file **views.py** and replace on lines 27 and 65 *client\_secrets.json* by 
  */var/www/flaskItemsCatalog/flaskItemsCatalog/client\_secrets.json*
@@ -270,20 +270,20 @@
  As now we use PostgreSQL instead of SQLite we need to change some lines in several files
  1) Navigate to *flaskItemsCatalog* dir and open **views.py** again
  2) Find line with **engine = create\_engine('sqlite:///catalog.db')** and replace it by 
-    **engine = create\_engine('postgresql://catalogitems:passwowrd\_of\_your\_database@localhost/catalogitems')**
+    **engine = create\_engine('postgresql://catalogitems:password\_of\_your\_database@localhost/catalogitems')**
  3) Do the same for files **models.py** and **fake\_data.py**
  
  #### Other updates in the project's files
  1) Let's make the owner of the full project **ubuntu** user, we should do that [recursively] so type next command:
-  ```
-  $ cd /var/www/
-  $ sudo chown -R ubuntu:ubuntu flaskItemsCatalog/
-  ```
+   ```
+     $ cd /var/www/
+     $ sudo chown -R ubuntu:ubuntu flaskItemsCatalog/
+   ```
  2) Now change the name of **views.py** file to **\_\_init\_\_.py**
- ```
- $ cd /var/www/flaskItemsCatalog/flaskItemsCatalog
- $ mv view.py __init__.py
- ```
+   ```
+     $ cd /var/www/flaskItemsCatalog/flaskItemsCatalog
+     $ mv view.py __init__.py
+   ```
  3) Open this file and scroll to the end of it
  4) Find the line with **app.run(host='0.0.0.0', port=5000)** and remove **host='0.0.0.0', port=5000** there
  
@@ -292,34 +292,135 @@
  #### Install virtual env and project dependencies
  The last item in the whole section is a virtual environment and dependencies.
  1) Install pip and virtual env globally:
- ```
- $ sudo apt-get install python-pip
- $ sudo apt-get install python-virtualenv
- ```
+   ```
+     $ sudo apt-get install python-pip
+     $ sudo apt-get install python-virtualenv
+   ```
  2) Create virtual environment in the directory */var/www/flaskItemsCatalog/flaskItemsCatalog*:
- ```
- $ virtualenv my_awesome_env_name
- ```
+   ```
+     $ virtualenv my_awesome_env_name
+   ```
  3) Activate it:
- ```
- $ . my_awesome_env_name/bin/activate
- ```
+   ```
+     $ . my_awesome_env_name/bin/activate
+   ```
  4) Now you are ready to install all dependencies:
- ```
- $ pip install sqlalchemy
- $ pip install flask
- $ pip install httplib2
- $ pip install requests
- $ pip install --upgrade oauth2client
- $ sudo apt-get install libpq-dev
- $ pip install psycopg2
- ```
+   ```
+     $ pip install sqlalchemy
+     $ pip install flask
+     $ pip install httplib2
+     $ pip install requests
+     $ pip install --upgrade oauth2client
+     $ sudo apt-get install libpq-dev
+     $ pip install psycopg2
+   ```
  5) To deactivate the virtual environment type:
- ```
- $ deactivate
- ``` 
+   ```
+     $ deactivate
+   ``` 
+ 
+ ## Configure Apache
+ #### Add a virtual host and disable default apache site
+ 1) Navigate sites-available dir and create configuration file for the app:
+   ```
+     $ cd /etc/apache2/sites-available/
+     $ touch flaskItemsCatalog.conf
+   ```
+ 
+ 2) Paste next lines in this file:
+   ```
+     <VirtualHost *:80>
+         ServerName my_public_ip
+         ServerAdmin 364alians364@gmail.com
+         WSGIScriptAlias / /var/www/flaskItemsCatalog/flaskItemsCatalog.wsgi
+         <Directory /var/www/flaskItemsCatalog/flaskItemsCatalog/>
+                 Order allow,deny
+                 Allow from all
+                 Options -Indexes
+         </Directory>
+         Alias /static /var/www/flaskItemsCatalog/flaskItemsCatalog/static
+         <Directory /var/www/flaskItemsCatalog/flaskItemsCatalog/static/>
+                 Order allow,deny
+                 Allow from all
+                 Options -Indexes
+         </Directory>
+         ErrorLog ${APACHE_LOG_DIR}/error.log
+         LogLevel warn
+         CustomLog ${APACHE_LOG_DIR}/access.log combined
+     </VirtualHost>
+    
+   ```
+ 
+ 3) Enable the virtual host:
+   ```
+     $ sudo a2ensite flaskItemsCatalog
+   ```
+ 4) Disable default apache site:
+   ```
+     $ sudo a2dissite 000-default.conf
+   ```
+ 5) Restart apache:
+   ```
+     $ sudo service apache2 reload
+   ```
+ 
+ #### Set www-data user to the project files
+ Apache works as **www-data** user, so you need to change the ownership
+ of your project dir, use this command to do that:
+   ```
+     sudo chown -R www-data:www-data flaskItemsCatalog/
+   ```
+ 
+ ## Finally, run the project!
+ 1) Go to project dir and activate virtual environment, for that type next commands:
+   ```
+     $ cd /var/www/flaskItemsCatalog/flaskItemsCatalog/
+     $ . my_awesome_env_name/bin/activate
+   ```
+ 2) Add fake data to database and deactivate my_awesome_env_name:
+   ```
+     $ python fake_data.py
+     $ deactivate
+   ```
+ 3) Restart apache:
+   ```
+     $ sudo service apache2 restart
+   ```
+ 4) Visit http://my_public_ip or http://ec2-my_public_ip.ap-south-1.compute.amazonaws.com 
  
  
+ References:
+ 
+ virtual environment guide: [flask virtaulenv guide]
+ 
+ mod_wsgi: [flask mod_wsgi guide], [mod_wsgi issue], [udacity forum mod_wsgi]
+ 
+ ufw: [udacity forum ufw]
+ 
+ www-data: [udacity forum www-data]
+ 
+ work with PostgreSQL: [postgresql tutorial]
+ 
+ psycopg2 issue: [psycopg2 issue]
+ 
+ login with grader: [udacity forum login with grader]
+ 
+ default apache site issue: [udacity default apache site]
+ 
+ PostgreSQL and Flask: [PostgreSQL and Flask]
+ 
+ 
+ [PostgreSQL and Flask]: <http://killtheyak.com/use-postgresql-with-django-flask/>
+ [udacity default apache site]: <https://discussions.udacity.com/t/solved-getting-both-ip-and-amazon-ec2s-public-url-to-point-at-app/40166>
+ [udacity forum login with grader]: <https://discussions.udacity.com/t/how-to-login-to-my-aws-virtual-server-as-new-user-grader/201164/7>
+ [udacity forum mod_wsgi]: <https://discussions.udacity.com/t/list-of-items-in-the-directory-instead-of-displaying-site/35423/4>
+ [psycopg2 issue]: <https://stackoverflow.com/questions/5629368/installing-psycopg2-into-virtualenv-when-postgresql-is-not-installed-on-developm>
+ [postgresql tutorial]: <https://www.tutorialspoint.com/postgresql/postgresql_create_database.htm>
+ [udacity forum www-data]: <https://discussions.udacity.com/t/installing-virtualenv/224005/7?u=364alians364>
+ [udacity forum ufw]: <https://discussions.udacity.com/t/how-is-fail2ban-related-to-ufw/47638>
+ [mod_wsgi issue]: <https://stackoverflow.com/questions/18427766/apache2-and-mod-wsgi-target-wsgi-script-cannot-be-loaded-as-python-module>
+ [flask mod_wsgi guide]: <http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/#working-with-virtual-environments
+ [flask virtaulenv guide]: <http://flask.pocoo.org/docs/0.12/installation/
  [recursively]: <http://nersp.nerdc.ufl.edu/~dicke3/nerspcs/chown.html>
  [Udacity OAuth2]: <https://www.udacity.com/course/authentication-authorization-oauth--ud330>
  [Google developer console]: <https://console.developers.google.com/projectselector/apis/credentials>
