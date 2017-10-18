@@ -14,7 +14,7 @@
 
  SSH Port: 2200
   
- All steps below are oriented for macOS users, but I believe they are should be the same for
+ All steps below are oriented for macOS users, but I believe they should be the same for
  Windows and especially Linux users.
 
  ## Initialisation
